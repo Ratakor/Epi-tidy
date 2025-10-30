@@ -137,7 +137,7 @@ static bool get_result(char *func_name, size_t line_count, size_t arg_count,
 size_t check_file(FILE *file, size_t max_line, size_t max_args, size_t max_func)
 {
     char *line = NULL;
-    size_t n;
+    size_t size = 0;
 
     size_t nb_invalid = 0;
 
@@ -153,9 +153,9 @@ size_t check_file(FILE *file, size_t max_line, size_t max_args, size_t max_func)
     bool in_function = false;
     bool valid_void = false;
 
-    while ((getline(&line, &n, file)) != EOF)
+    while ((getline(&line, &size, file)) != -1)
     {
-        bool countable_line = 0;
+        bool countable_line = false;
         char *trim_line = trim(line);
 
         if (trim_line[0] == 0 || trim_line[0] == '#')
@@ -204,11 +204,18 @@ size_t check_file(FILE *file, size_t max_line, size_t max_args, size_t max_func)
         {
             while (strchr(trim_line, ')') == NULL)
             {
-                char *buffer = NULL;
-                getline(&buffer, &n, file);
-                char *new_line = concatenete(trim_line, buffer);
+                char *next_line = NULL;
+                size_t next_line_size = 0;
+                if (getline(&next_line, &next_line_size, file) == -1)
+                {
+                    // I have no idea when this can happen btw
+                    abort();
+                }
+
+                // this is dumb and maybe incorrect but I cba fixing it yet
+                char *new_line = concatenete(trim_line, next_line);
                 free(trim_line);
-                free(buffer);
+                free(next_line);
 
                 line = new_line;
                 trim_line = trim(new_line);

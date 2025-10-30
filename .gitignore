@@ -13,4 +13,6 @@
 *.gcda
 *.gcno
 
+result
+
 epi-tidy

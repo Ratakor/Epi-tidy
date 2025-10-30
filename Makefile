@@ -28,4 +28,12 @@ gdb: $(BIN)
 clean:
 	$(RM) $(OBJ) $(BIN)
 
-.PHONY: all debug clean gdb
+install: all
+	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	cp -f $(BIN) $(DESTDIR)$(PREFIX)/bin
+	chmod 755 $(DESTDIR)$(PREFIX)/bin/$(BIN)
+
+uninstall:
+	rm -f $(DESTDIR)$(PREFIX)/bin/$(BIN)
+
+.PHONY: all debug clean gdb install uninstall
